@@ -3,7 +3,6 @@ import builtins
 import os
 import ffmpeg
 from dotenv import load_dotenv
-from openai import OpenAI
 from IPython.display import Markdown, display, update_display
 from huggingface_hub import login
 from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
@@ -12,9 +11,6 @@ import gradio as gr
 from pytubefix import YouTube
 from typing import Generator, List, Dict, Tuple
 import time
-import google.generativeai as genai
-from anthropic import Anthropic
-
 
 AUDIO_MODEL = "openai/whisper-large-v3-turbo"
 
@@ -94,11 +90,11 @@ class App:
         # Transcribe Audio
         transcript,duration = self.get_transcript(audio_filename,transcription_location)
         # Update with transcript
-        current_output = f"Transcript generated in {duration:.3f} seconds \n\n Transcript: \n\n{transcript}\n\nGenerating notes..."
+        current_output = f"Transcript generated in {duration:.3f} seconds \n\n Transcript: \n\n{transcript}"
         yield current_output, None
         with open(f"{audio_filename[:-4]}_transcript.txt",'w',encoding='utf-8') as f:
             f.write(transcript)
-        # Output Notes
+        yield "Transcript generated, ready to download.", f"{audio_filename[:-4]}_transcript.txt"
 
     def run(self):
         with gr.Blocks(title="Transcript Generator",fill_width=True) as app:
